@@ -3,15 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import api from './api';
 
-function VideoList() {
+function VideoList({searchResultText}) {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     const fetchVideos = async () => {
+      if (searchResultText.trim() === '') return; // 검색어가 비어있으면 호출하지 않음
+      
       try {
         const response = await api.get('/search', {
           params: {
-            q: '금융', // 유튜브 검색어! 여기에 원하는 단어 넣으면 관련 영상 가져옴
+            q: searchResultText, // 유튜브 검색어! 여기에 원하는 단어 넣으면 관련 영상 가져옴
           },
         });
         setVideos(response.data.items);
@@ -21,11 +23,10 @@ function VideoList() {
     };
 
     fetchVideos();
-  }, []);
+  }, [searchResultText]);
 
   return (
     <div>
-      <h2>YouTube Clone</h2>
       <ul>
         {videos.map((video) => (
           <li key={video.id.videoId}>
