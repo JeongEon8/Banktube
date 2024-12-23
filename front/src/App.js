@@ -1,10 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import VideoList from './VideoList';
+import Search from './Search';
 
 function App() {
+  const [searchResultText, setSearchResultText] = useState(""); // 검색어 변수 (상태관리)
+
   return(
-    <div className='APP'>
-      <VideoList/>
+    <div>
+      <Search setSearchResultText={setSearchResultText}/> 
+      <VideoList searchResultText={searchResultText}/>
     </div>
   )
 }
