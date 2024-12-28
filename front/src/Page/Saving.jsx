@@ -1,6 +1,8 @@
 // 적금 src/Page/Saving.jsx
+
 import React, { useState, useEffect } from 'react';
 import instance from '../api';
+import '../Style/Page.css';
 
 function Saving() {
   const [data, setData] = useState(null);
@@ -9,9 +11,9 @@ function Saving() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await instance.get('', {
+        const response = await instance.get('/search', {
           params: {
-            q: '',
+            q: '적금',
           },
         });
         setData(response.data);
@@ -28,12 +30,24 @@ function Saving() {
     return <div>오류 발생: {error}</div>;
   }
 
+  if (!data) {
+    return <div>로딩 중...</div>;
+  }
+
   return (
     <div>
-      <h1>API 데이터</h1>
-      <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-        {JSON.stringify(data, null, 2)}
-      </pre>
+      <h1>적금 영상</h1>
+      <div className="container">
+        {data.items.map((video) => (
+          <div key={video.id.videoId} className="card">
+            <img
+              src={video.snippet.thumbnails.medium.url} // 썸네일
+              alt={video.snippet.title}
+            />
+            <h3>{video.snippet.title}</h3> {/* 영상 제목 */}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

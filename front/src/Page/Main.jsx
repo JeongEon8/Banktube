@@ -10,7 +10,7 @@ function Main() {
 
   const fetchVideos = async (tag) => {
     try {
-      const response = await instance.get('', {
+      const response = await instance.get('/search', {
         params: {
           q: tag,
         },
@@ -24,10 +24,10 @@ function Main() {
   const handleTagClick = (tag) => {
     console.log(`Fetching videos for: ${tag}`);
     fetchVideos(tag);
-    // if (tag === '적금') navigate('/saving');
-    // if (tag === '예금') navigate('/deposit');
-    // if (tag === '대출') navigate('/loan');
-    // if (tag === '금리') navigate('/interest-rate');
+    if (tag === '적금') navigate('/saving');
+    if (tag === '예금') navigate('/deposit');
+    if (tag === '대출') navigate('/loan');
+    if (tag === '금리') navigate('/interest-rate');
   };
 
   return (
