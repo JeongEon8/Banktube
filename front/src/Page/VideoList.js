@@ -1,15 +1,15 @@
-// src/VideoList.js
+// src/Page/VideoList.js
 
 import React, { useState, useEffect } from 'react';
-import api from './api';
+import api from '../api';
 
-function VideoList({searchResultText}) {
+function VideoList({ searchResultText }) {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     const fetchVideos = async () => {
       if (searchResultText.trim() === '') return; // 검색어가 비어있으면 호출하지 않음
-      
+
       try {
         const response = await api.get('/search', {
           params: {
