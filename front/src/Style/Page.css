@@ -3,28 +3,69 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  margin: 20px 0; /* 상하 여백 */
+  margin: 20px 0;
 }
 
 .card {
-  flex: 0 0 calc(25% - 20px); /* 4개씩 한 줄에 표시 (25% 너비에서 간격 제거) */
+  position: relative; /* 자식 요소를 정렬하기 위해 */
+  flex: 0 0 calc((100% - (4 * 20px)) / 4);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   text-align: center;
   padding: 10px;
   background-color: #fff;
   border: 1px solid #ccc;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
 }
 
 .card img {
   width: 100%;
-  height: auto; /* 비율 유지 */
+  height: auto;
+  transition: opacity 0.3s ease;
 }
 
-.card h3 {
+/* 제목 링크 스타일 */
+h3 a {
+  text-decoration: none;
   font-size: 16px;
-  margin: 10px 0;
   color: #333;
+  transition: color 0.3s ease;
+}
+
+/* 링크 비활성화 상태 */
+.inactive-link {
+  pointer-events: none; /* 클릭 불가 */
+}
+
+/* 링크 활성화 상태 */
+.active-link {
+  pointer-events: auto; /* 클릭 가능 */
+  color: #007bff;
+}
+
+.thumbnail-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.video-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 @media (max-width: 760px) {

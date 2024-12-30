@@ -7,6 +7,7 @@ import '../Style/Page.css';
 function Interest_rate() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null); // 오류 관리
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,15 +37,53 @@ function Interest_rate() {
 
   return (
     <div>
-      <h1>금리 영상</h1>
       <div className="container">
         {data.items.map((video) => (
-          <div key={video.id.videoId} className="card">
-            <img
-              src={video.snippet.thumbnails.medium.url} // 썸네일
-              alt={video.snippet.title}
-            />
-            <h3>{video.snippet.title}</h3> {/* 영상 제목 */}
+          <div
+            key={video.id.videoId}
+            className="card"
+            onMouseEnter={() => setHoveredCard(video.id.videoId)}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            <div className="thumbnail-container">
+              {hoveredCard === video.id.videoId ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${video.id.videoId}?autoplay=1&mute=1`} // YouTube embed URL
+                  allow="autoplay; encrypted-media"
+                  title={video.snippet.title}
+                  className="video-frame"
+                ></iframe>
+              ) : (
+                <img
+                  src={video.snippet.thumbnails.medium.url} // 썸네일
+                  alt={video.snippet.title}
+                  className="thumbnail"
+                />
+              )}
+            </div>
+            <h3>
+              <a
+                href={
+                  hoveredCard === video.id.videoId
+                    ? `https://www.youtube.com/watch?v=${video.id.videoId}`
+                    : undefined
+                } // 마우스 오버 시에만만 URL 활성화
+                target={hoveredCard === video.id.videoId ? '_blank' : undefined}
+                rel={
+                  hoveredCard === video.id.videoId
+                    ? 'noopener noreferrer'
+                    : undefined
+                }
+                className={
+                  hoveredCard === video.id.videoId
+                    ? 'active-link'
+                    : 'inactive-link'
+                }
+              >
+                {video.snippet.title}
+              </a>
+            </h3>
+            {/* 영상 제목 */}
           </div>
         ))}
       </div>

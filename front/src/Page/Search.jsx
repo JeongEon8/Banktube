@@ -1,13 +1,17 @@
 // src/Page/Search.js
+
 import { SlMenu } from 'react-icons/sl';
 import { BsFillKeyboardFill } from 'react-icons/bs';
 import { CiSearch } from 'react-icons/ci';
 import logo from '../assets/img/logo.png';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from './Button';
 import '../Style/Search.css';
 
-function Search({ setSearchResultText }) {
-  const [searchText, setSearchText] = useState([]);
+function Search({ setSearchResultText, onReset }) {
+  const [searchText, setSearchText] = React.useState('');
+  const navigate = useNavigate();
 
   const searchInput = (e) => {
     setSearchText(e.target.value); // 입력값에 따라 searchText 상태 갱신
@@ -15,17 +19,20 @@ function Search({ setSearchResultText }) {
 
   const handleSearch = () => {
     setSearchResultText(searchText); // 버튼 클릭 시 searchResultText를 searchText로 갱신
+    onReset();
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       setSearchResultText(searchText); // 엔터키시 searchResultText를 searchText로 갱신
+      onReset();
     }
   };
 
-  const logoPress = (e) => {
-    window.location.reload(); // 페이지 새로고침
-    // window.location.href = "https://www.youtube.com";
+  const logoPress = () => {
+    setSearchResultText(''); // 기존 검색 결과 초기화
+    onReset();
+    navigate('/main'); // main 페이지로 이동
   };
 
   return (
@@ -56,7 +63,6 @@ function Search({ setSearchResultText }) {
           <CiSearch size="24" />
         </button>
       </div>
-      <div></div>
     </div>
   );
 }
