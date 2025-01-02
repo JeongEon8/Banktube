@@ -15,6 +15,7 @@
   background-color: white; /* 배경색 설정 */
   z-index: 1000; /* 다른 요소들 위에 표시되도록 z-index 설정 */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  justify-content: space-between;
 }
 
 /* -------- 왼쪽 ----- */
@@ -42,18 +43,17 @@
 /* ----------- 검색창 ---------- */
 
 .header-middle {
+  flex: 1;
   display: flex;
   align-items: center;
-  justify-items: center;
-  width: 50%;
+  justify-content: center;
 }
 
 .search-bar {
-  width: 63%;
+  width: 30%;
   display: flex;
   align-items: center;
   padding: 6.8px;
-  margin-left: -8px;
   border: 1px solid #ccc;
   border-radius: 20px 0 0 20px;
   cursor: text;
@@ -76,7 +76,8 @@
 }
 
 .search-bar-button {
-  width: 7.5%;
+  width: 50px;
+  height: 41px;
   background-color: #f1f1f1;
   border: 1px solid#ccc;
   padding: 6.2px;
