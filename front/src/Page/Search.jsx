@@ -20,7 +20,7 @@ function Search({ setSearchResultText, onReset }) {
   const handleSearch = () => {
     if (searchText.trim()) {
       setSearchResultText(searchText.trim()); // 검색 결과 상태 갱신
-      if (onReset) onReset(); // onReset 함수 호출 (필요 시)
+      if (onReset) onReset();
     }
   };
 

@@ -7,7 +7,12 @@ import Button from './Button';
 import { useOutletContext } from 'react-router-dom';
 
 function Interest_rate() {
-  const { searchResultText = '' } = useOutletContext() || {};
+  const {
+    searchResultText = '',
+    setSearchResultText,
+    selectedTag,
+    handleTagClick,
+  } = useOutletContext() || {};
   const [videos, setVideos] = useState([]); // 영상 데이터 저장
   const [error, setError] = useState(null); // 오류 관리
   const [hoveredCard, setHoveredCard] = useState(null); // 마우스 오버 상태 관리
@@ -46,23 +51,24 @@ function Interest_rate() {
   const fetchInterestRateVideos = useCallback(async () => {
     try {
       let videosData = [];
-      if (searchResultText.trim() === '') {
+      if (!searchResultText.trim()) {
         // 검색어가 없을 경우 기본 '금리' 태그로 영상 가져오기
-        videosData = await fetchVideos('금리');
+        videosData = await fetchVideos(selectedTag || '금리');
       } else {
         // 검색어가 있을 경우 해당 검색어로 검색
         videosData = await fetchVideos(searchResultText.trim());
+        handleTagClick(null); // 검색어 입력 시 태그 선택 해제
       }
       setVideos(videosData);
     } catch (err) {
       console.error(err);
       setError(err.message);
     }
-  }, [searchResultText, fetchVideos]);
+  }, [searchResultText, selectedTag, fetchVideos, handleTagClick]);
 
   useEffect(() => {
     fetchInterestRateVideos(); // 컴포넌트 마운트 시 데이터 가져오기
-  }, [searchResultText]);
+  }, [fetchInterestRateVideos]);
 
   const formatDuration = (duration) => {
     const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
@@ -108,7 +114,11 @@ function Interest_rate() {
 
   return (
     <div>
-      <Button />
+      <Button
+        selectedTag={selectedTag} // 선택된 태그를 전달
+        onReset={() => setSearchResultText('')} // 검색어 초기화
+        onTagClick={handleTagClick} // 태그 클릭 시 호출할 함수
+      />
       <div className="container">
         {videos.map((video) => (
           <div

@@ -32,20 +32,47 @@ function App() {
 }
 
 function WithSearch() {
-  const [searchResultText, setSearchResultText] = useState(''); // 검색어 변수 (상태관리)
+  const [searchResultText, setSearchResultText] = useState(''); // 검색어 상태
+  const [selectedTag, setSelectedTag] = useState(null); // 선택된 태그 상태
   const location = useLocation();
 
-  // 라우팅 변경 시 검색 결과 초기화
+  const handleTagReset = () => {
+    setSelectedTag(null); // 검색 시 태그를 해제
+  };
+
   useEffect(() => {
-    setSearchResultText(''); // 검색어 상태 초기화
+    const excludedPaths = [
+      '/main',
+      '/saving',
+      '/deposit',
+      '/loan',
+      '/interest-rate',
+    ];
+    if (!excludedPaths.includes(location.pathname)) {
+      setSearchResultText('');
+      setSelectedTag(null);
+    }
   }, [location]);
 
   return (
     <>
-      <Search setSearchResultText={setSearchResultText} />
+      <Search
+        setSearchResultText={(text) => {
+          setSearchResultText(text);
+          handleTagReset(); // 검색 시 태그 해제
+        }}
+        onReset={handleTagReset}
+      />
       {/* 검색 결과 영상 목록 */}
       <VideoList searchResultText={searchResultText} />
-      <Outlet context={{ searchResultText }} /> {/* context 전달 */}
+      <Outlet
+        context={{
+          searchResultText,
+          setSearchResultText,
+          selectedTag,
+          setSelectedTag,
+        }}
+      />
     </>
   );
 }

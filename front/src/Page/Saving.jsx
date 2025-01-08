@@ -1,5 +1,3 @@
-// 적금: src/Page/Saving.js
-
 import React, { useState, useEffect, useCallback } from 'react';
 import instance from '../api';
 import '../Style/Page.css';
@@ -7,7 +5,13 @@ import Button from './Button';
 import { useOutletContext } from 'react-router-dom';
 
 function Saving() {
-  const { searchResultText = '' } = useOutletContext() || {};
+  const {
+    searchResultText = '',
+    setSearchResultText,
+    selectedTag,
+    setSelectedTag,
+  } = useOutletContext() || {};
+
   const [videos, setVideos] = useState([]); // 영상 데이터 저장
   const [error, setError] = useState(null); // 오류 관리
   const [hoveredCard, setHoveredCard] = useState(null); // 마우스 오버 상태 관리
@@ -24,8 +28,6 @@ function Saving() {
       });
 
       const videoIds = searchResponse.data.items.map((item) => item.id.videoId);
-
-      // 상세 정보 가져오기
       if (videoIds.length > 0) {
         const videoResponse = await instance.get('/videos', {
           params: {
@@ -33,7 +35,6 @@ function Saving() {
             part: 'snippet,contentDetails,statistics',
           },
         });
-
         return videoResponse.data.items;
       }
       return [];
@@ -46,20 +47,19 @@ function Saving() {
 
   const fetchSavingVideos = useCallback(async () => {
     try {
-      let videosData = [];
-      if (searchResultText.trim() === '') {
-        // 검색어가 없을 경우 기본 '적금' 태그로 영상 가져오기
-        videosData = await fetchVideos('적금');
+      let query = searchResultText.trim();
+      if (query) {
+        setSelectedTag(null); // 검색어가 있으면 태그 해제
       } else {
-        // 검색어가 있을 경우 해당 검색어로 검색
-        videosData = await fetchVideos(searchResultText.trim());
+        query = selectedTag || '적금'; // 검색어가 없으면 태그 사용
       }
+      const videosData = await fetchVideos(query);
       setVideos(videosData);
     } catch (err) {
       console.error(err);
       setError(err.message);
     }
-  }, [searchResultText, fetchVideos]);
+  }, [searchResultText, selectedTag, fetchVideos, setSelectedTag]);
 
   useEffect(() => {
     fetchSavingVideos();
@@ -108,7 +108,14 @@ function Saving() {
 
   return (
     <div>
-      <Button />
+      <Button
+        selectedTag={selectedTag}
+        onReset={() => setSearchResultText('')}
+        onTagClick={(tag) => {
+          setSearchResultText('');
+          setSelectedTag(tag);
+        }}
+      />
       <div className="container">
         {videos.map((video) => (
           <div

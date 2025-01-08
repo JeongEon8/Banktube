@@ -7,7 +7,12 @@ import Button from './Button';
 import { useOutletContext } from 'react-router-dom';
 
 function Loan() {
-  const { searchResultText = '' } = useOutletContext() || {};
+  const {
+    searchResultText = '',
+    setSearchResultText,
+    selectedTag,
+    handleTagClick,
+  } = useOutletContext() || {};
   const [videos, setVideos] = useState([]); // 영상 데이터 저장
   const [error, setError] = useState(null); // 오류 관리
   const [hoveredCard, setHoveredCard] = useState(null); // 마우스 오버 상태 관리
@@ -46,26 +51,26 @@ function Loan() {
   const fetchLoanVideos = useCallback(async () => {
     try {
       let videosData = [];
-      if (searchResultText.trim() === '') {
+      if (!searchResultText.trim()) {
         // 검색어가 없을 경우 기본 '대출' 태그로 영상 가져오기
-        videosData = await fetchVideos('대출');
+        videosData = await fetchVideos(selectedTag || '대출');
       } else {
         // 검색어가 있을 경우 해당 검색어로 검색
         videosData = await fetchVideos(searchResultText.trim());
+        handleTagClick(null); // 검색어 입력 시 태그 선택 해제
       }
       setVideos(videosData);
     } catch (err) {
       console.error(err);
       setError(err.message);
     }
-  }, [searchResultText, fetchVideos]);
+  }, [searchResultText, selectedTag, fetchVideos, handleTagClick]);
 
   useEffect(() => {
     fetchLoanVideos();
   }, [fetchLoanVideos]);
 
   const formatDuration = (duration) => {
-    // ISO 8601 duration 형식 변환 (예: PT10M25S -> 10:25)
     const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
     const hours = match[1] ? match[1].slice(0, -1).padStart(2, '0') : null;
     const minutes = match[2] ? match[2].slice(0, -1).padStart(2, '0') : '00';
@@ -109,7 +114,11 @@ function Loan() {
 
   return (
     <div>
-      <Button />
+      <Button
+        selectedTag={selectedTag} // 선택된 태그를 전달
+        onReset={() => setSearchResultText('')} // 검색어 초기화
+        onTagClick={handleTagClick} // 태그 클릭 시 호출할 함수
+      />
       <div className="container">
         {videos.map((video) => (
           <div

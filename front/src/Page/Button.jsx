@@ -1,28 +1,54 @@
-// src/Page/Button.jsx
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../Style/Botton.css';
 
-function Button({ onReset }) {
+function Button({ selectedTag, onReset, onTagClick }) {
   const tags = ['적금', '예금', '대출', '금리']; // 태그 목록
-  const [selectedTag, setSelectedTag] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleTagClick = (tag) => {
-    setSelectedTag(tag);
-    console.log(`Fetching videos for: ${tag}`);
-    if (tag === '적금') navigate('/saving');
-    if (tag === '예금') navigate('/deposit');
-    if (tag === '대출') navigate('/loan');
-    if (tag === '금리') navigate('/interest-rate');
+    if (onTagClick) onTagClick(tag);
+    switch (tag) {
+      case '적금':
+        navigate('/saving');
+        break;
+      case '예금':
+        navigate('/deposit');
+        break;
+      case '대출':
+        navigate('/loan');
+        break;
+      case '금리':
+        navigate('/interest-rate');
+        break;
+      default:
+        break;
+    }
+    if (onReset) onReset(); // 검색어 초기화
   };
 
   useEffect(() => {
-    if (onReset) {
-      setSelectedTag(null); // 활성화된 상태 초기화
+    if (typeof onTagClick === 'function') {
+      switch (location.pathname) {
+        case '/saving':
+          onTagClick('적금');
+          break;
+        case '/deposit':
+          onTagClick('예금');
+          break;
+        case '/loan':
+          onTagClick('대출');
+          break;
+        case '/interest-rate':
+          onTagClick('금리');
+          break;
+        default:
+          onTagClick(null);
+          break;
+      }
     }
-  }, [onReset]);
+  }, [location.pathname, onTagClick]);
 
   return (
     <div className="tag-container">
