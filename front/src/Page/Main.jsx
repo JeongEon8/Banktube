@@ -25,13 +25,56 @@ function Main() {
         return [...videoMap.values()];
     };
 
+    const filledVideo = async (videolist, query) => {
+        const remainder = videolist.length % 4;
+        if (remainder === 0) return videolist;
+
+        const needed = 4 - remainder;
+        let extra = [];
+        let nextPageToken = null;
+        let attempts = 0;
+
+        while (extra.length < needed && attempts < 5) {
+            attempts++;
+
+            const response = await instance.get('/search', {
+                params: {
+                    q: query,
+                    part: 'snippet',
+                    maxResults: 5,
+                    type: 'video',
+                    pageToken: nextPageToken || undefined,
+                },
+            });
+            nextPageToken = response.data.nextPageToken;
+
+            const ids = response.data.items.map((item) => item.id.videoId);
+            const videoResponse = await instance.get('/videos', {
+                params: {
+                    id: ids.join(','),
+                    part: 'snippet,contentDetails,statistics',
+                },
+            });
+
+            const newVideos = videoResponse.data.items.filter(
+                (video) =>
+                    !videolist.some((v) => v.id === video.id) &&
+                    !extra.some((v) => v.id === video.id)
+            );
+            extra.push(...newVideos);
+
+            if (!nextPageToken) break;
+        }
+        return [...videolist, ...extra.slice(0, needed)];
+    };
+
     const fetchVideos = async (query) => {
         try {
             const searchResponse = await instance.get('/search', {
                 params: {
                     q: query,
                     part: 'snippet',
-                    maxResults: 1,
+                    maxResults: 4,
                     type: 'video',
                 },
             });
@@ -44,7 +87,7 @@ function Main() {
             if (videoIds.length > 0) {
                 const videoResponse = await instance.get('/videos', {
                     params: {
-                        id: videoIds.join(','), // 쉼표로 구분된 videoId 리스트
+                        id: videoIds.join(','),
                         part: 'snippet,contentDetails,statistics',
                     },
                 });
@@ -69,7 +112,11 @@ function Main() {
                 const list = await fetchVideos(tag);
                 all.push(...list);
             }
-            setVideos(Duplicates(all)); //return allVideos;
+
+            let unique = Duplicates(all);
+
+            const filled = await filledVideo(unique, '금융');
+            setVideos(filled); //return allVideos;
         } catch (err) {
             console.error(err);
             setError(err.message);
@@ -80,7 +127,9 @@ function Main() {
     const tagVideos = useCallback(async () => {
         try {
             const list = await fetchVideos(selectedTag);
-            setVideos(Duplicates(list));
+            let unique = Duplicates(list);
+            const filled = await filledVideo(unique, selectedTag);
+            setVideos(filled);
         } catch (err) {
             console.error(err);
             setError(err.message);
@@ -90,7 +139,9 @@ function Main() {
     const searchVideos = useCallback(async () => {
         try {
             const list = await fetchVideos(searchResultText);
-            setVideos(Duplicates(list));
+            let unique = Duplicates(list);
+            const filled = await filledVideo(unique, searchResultText);
+            setVideos(filled);
         } catch (err) {
             console.error(err);
             setError(err.message);

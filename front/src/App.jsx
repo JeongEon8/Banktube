@@ -1,18 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import {
-    BrowserRouter,
-    Routes,
-    Route,
-    Outlet,
-    useLocation,
-} from 'react-router-dom';
-import VideoList from './Page/VideoList';
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import Search from './Page/Search';
 import Main from './Page/Main';
-import Saving from './Page/Saving';
-import Deposit from './Page/Deposit';
-import Loan from './Page/Loan';
-import InterestRate from './Page/Interest_rate';
 
 function App() {
     return (
@@ -48,10 +37,6 @@ function WithSearch() {
                     setSelectedTag(null);
                 }}
             />
-            {/* 검색 결과 영상 목록
-            {searchResultText.trim() ? (
-                <VideoList searchResultText={searchResultText} />
-            ) : ( */}
             <Outlet
                 context={{
                     setSearchResultText,
@@ -60,7 +45,6 @@ function WithSearch() {
                     handleTagClick,
                 }}
             />
-            {/* )} */}
         </>
     );
 }
